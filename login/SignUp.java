@@ -144,7 +144,7 @@ public class SignUp extends JFrame {
     }
     
      private Connection connect(){
-        String url = "jdbc:sqlite:C:\\Users\\user\\Desktop\\dataBase\\src\\db\\data.db";
+        String url = "jdbc:sqlite:data.db";
         Connection con = null;
         try{
             Class.forName("org.sqlite.JDBC");
