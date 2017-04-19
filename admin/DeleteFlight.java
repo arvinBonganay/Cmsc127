@@ -34,33 +34,36 @@ public class DeleteFlight extends javax.swing.JFrame {
             java.util.List<String> l = new ArrayList<>();
             while (rs.next()) {
                 l.add(String.valueOf(rs.getInt("flightNum")));
-                l.add(rs.getString("airport"));
-                l.add(rs.getString("airplane"));
+                l.add(rs.getString("airlineId"));
+                l.add(rs.getString("airportId"));
                 l.add(rs.getString("destinationFrom"));
                 l.add(rs.getString("destinationTo"));
                 l.add(rs.getString("date"));
-                l.add(String.valueOf(rs.getInt("capacity")));
+                l.add(rs.getString("pilot"));
+                l.add(rs.getString("airplane"));
             }
+            
             if (l.isEmpty()){
                 JOptionPane.showMessageDialog(this, "No results Found");
                 searchField.setText(prevSearch);
             } else {
                 prevSearch = searchField.getText();
-                int row = l.size() / 7;
+                int row = l.size() / 8;
 
-                String[][] data = new String[row][7];
+                String[][] data = new String[row][8];
                 for (int i = 0; i < row; i++){
 
-                    data[i][0] = l.get(7 * i);
-                    data[i][1] = l.get(7 * i + 1);
-                    data[i][2] = l.get(7 * i + 2);
-                    data[i][3] = l.get(7 * i + 3);
-                    data[i][4] = l.get(7 * i + 4);
-                    data[i][5] = l.get(7 * i + 5);
-                    data[i][6] = l.get(7 * i + 6);
+                    data[i][0] = l.get(8 * i);
+                    data[i][1] = l.get(8 * i + 1);
+                    data[i][2] = l.get(8 * i + 2);
+                    data[i][3] = l.get(8 * i + 3);
+                    data[i][4] = l.get(8 * i + 4);
+                    data[i][5] = l.get(8 * i + 5);
+                    data[i][6] = l.get(8 * i + 6);
+                    data[i][7] = l.get(8 * i + 7);
                 }
                 
-                String column[] = {"FlightNum", "Airport", "Airplane", "DestinationFrom", "DestinationTo",  "date", "capacity"};
+                String column[] = {"FlightNum", "AirlineId", "AirportId", "DestinationFrom", "DestinationTo",  "Date", "Pilot", "Airplane"};
 
                 jTable1.setModel(new DefaultTableModel(data, column));
                 
@@ -122,7 +125,7 @@ public class DeleteFlight extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTable1);
 
-        searchType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "FlightNum ", "Airport", "Airplane", "Date", "DestinationTo", "DestinationFrom" }));
+        searchType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All", "FlightNum ", "AirlineId", "AirportId", "Date", "DestinationTo", "DestinationFrom", "Pilot" , "Airplane" }));
 
         searchButton.setText("Search");
         searchButton.addActionListener(new java.awt.event.ActionListener() {
@@ -236,11 +239,11 @@ public class DeleteFlight extends javax.swing.JFrame {
         }
     }                                            
 
-//    public static void main(String args[]) {
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new DeleteFlight().setVisible(true);
-//            }
-//        });
-//    }
+    public static void main(String args[]) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new DeleteFlight().setVisible(true);
+            }
+        });
+    }
 }

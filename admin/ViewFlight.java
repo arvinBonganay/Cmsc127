@@ -31,32 +31,33 @@ public class ViewFlight extends JFrame {
             java.util.List<String> l = new ArrayList<>();
             while (rs.next()) {
                 l.add(String.valueOf(rs.getInt("flightNum")));
-                l.add(rs.getString("airport"));
-                l.add(rs.getString("airplane"));
+                l.add(rs.getString("airlineId"));
+                l.add(rs.getString("airportId"));
                 l.add(rs.getString("destinationFrom"));
                 l.add(rs.getString("destinationTo"));
                 l.add(rs.getString("date"));
-                l.add(String.valueOf(rs.getInt("capacity")));
+                l.add(String.valueOf(rs.getInt("pilotId")));
+                l.add(rs.getString("airplaneNum"));
             }
             if (l.isEmpty()){
-                System.out.println("12312312312312312");
                 JOptionPane.showMessageDialog(this, "No results Found");
             } else {
-                int row = l.size() / 7;
+                int row = l.size() / 8;
 
-                String[][] data = new String[row][7];
+                String[][] data = new String[row][8];
                 for (int i = 0; i < row; i++){
 
-                    data[i][0] = l.get(7 * i);
-                    data[i][1] = l.get(7 * i + 1);
-                    data[i][2] = l.get(7 * i + 2);
-                    data[i][3] = l.get(7 * i + 3);
-                    data[i][4] = l.get(7 * i + 4);
-                    data[i][5] = l.get(7 * i + 5);
-                    data[i][6] = l.get(7 * i + 6);
+                    data[i][0] = l.get(8 * i);
+                    data[i][1] = l.get(8 * i + 1);
+                    data[i][2] = l.get(8 * i + 2);
+                    data[i][3] = l.get(8 * i + 3);
+                    data[i][4] = l.get(8 * i + 4);
+                    data[i][5] = l.get(8 * i + 5);
+                    data[i][6] = l.get(8 * i + 6);
+                    data[i][7] = l.get(8 * i + 7);
                 }
                 
-                String column[] = {"FlightNum", "Airport", "Airplane", "DestinationFrom", "DestinationTo",  "date", "capacity"};
+                String column[] = {"FlightNum", "Airline ID", "Airport ID", "DestinationFrom", "DestinationTo",  "Date", "Pilot", "Airplane"};
 
                 jTable1.setModel(new DefaultTableModel(data, column));
             }
@@ -121,7 +122,7 @@ public class ViewFlight extends JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         
-        searchType.setModel(new DefaultComboBoxModel<>(new String[] { "All", "Airport", "Airplane", "Date", "DestinationTo", "DestinationFrom" }));
+        searchType.setModel(new DefaultComboBoxModel<>(new String[] { "All", "AirlineID", "AirportID", "Date", "DestinationTo", "DestinationFrom", "Pilot", "Airplane" }));
         
         searchButton.setText("Search");
         searchButton.addActionListener(new ActionListener() {
@@ -129,14 +130,14 @@ public class ViewFlight extends JFrame {
                 searchButtonActionPerformed(evt);
             }
         });
-
+       
         GroupLayout layout = new GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 682, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(19, 19, 19)
@@ -176,7 +177,7 @@ public class ViewFlight extends JFrame {
         
     }                                            
 
-//    public static void main(String args[]) {
+    public static void main(String args[]) {
         
 //        try {
 //            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
@@ -195,11 +196,11 @@ public class ViewFlight extends JFrame {
 //            java.util.logging.Logger.getLogger(ViewFlight1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
         
-//        EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new ViewFlight("admin").setVisible(true);
-//            }
-//        });
-//    }
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ViewFlight("admin").setVisible(true);
+            }
+        });
+    }
 }
    
