@@ -1,6 +1,4 @@
-
-
-package db.admin;
+package db.user;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,20 +10,24 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class DeleteFlight extends javax.swing.JFrame {
+public class BookFlight extends javax.swing.JFrame {
     
-    private javax.swing.JButton deleteButton;
+    private javax.swing.JButton bookFlightButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField searchField;
     private javax.swing.JComboBox<String> searchType;
     private String prevSearch;
+    private int userId;
+    private String username;
 
-    public DeleteFlight() {
+    public BookFlight(int userId, String username) {
         initComponents();
         showTable("Select * From Flights");
         prevSearch = "";
+        this.username = username;
+        this.userId = userId;
     }
     
     private void showTable(String sql){
@@ -97,11 +99,11 @@ public class DeleteFlight extends javax.swing.JFrame {
         searchField = new javax.swing.JTextField();
         searchType = new javax.swing.JComboBox<>();
         searchButton = new javax.swing.JButton();
-        deleteButton = new javax.swing.JButton();
+        bookFlightButton = new javax.swing.JButton();
 
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                    new Admin().setVisible(true);
+                    new User(username, userId).setVisible(true);
             }
         });
 
@@ -136,10 +138,10 @@ public class DeleteFlight extends javax.swing.JFrame {
             }
         });
 
-        deleteButton.setText("Delete");
-        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+        bookFlightButton.setText("Book a Flight");
+        bookFlightButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deleteButtonActionPerformed(evt);
+                bookFlightButtonActionPerformed(evt);
             }
         });
 
@@ -151,7 +153,7 @@ public class DeleteFlight extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(searchField, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -162,7 +164,7 @@ public class DeleteFlight extends javax.swing.JFrame {
                         .addGap(43, 43, 43))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(bookFlightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(271, 271, 271))
         );
         layout.setVerticalGroup(
@@ -174,7 +176,7 @@ public class DeleteFlight extends javax.swing.JFrame {
                     .addComponent(searchType, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(searchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
-                .addComponent(deleteButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(bookFlightButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 239, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -194,58 +196,73 @@ public class DeleteFlight extends javax.swing.JFrame {
             String sql = "Select * From flights Where " + type + " == \"" + search + "\"";
             showTable(sql);
         }
-        
     }                                            
 
-    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {                                             
-        String search = searchField.getText();
-        String type = searchType.getSelectedItem().toString();
-        
-        String message = "Delete Flignt Number/s: ";
-        String sql = "";
-        if (search.equals("") || type.equals("All")){
-            sql += "Select flightNum From flights";
-        } else{
-            sql += "Select flightNum From Flights Where " + type + " == \"" + search + "\"";
+    private void bookFlightButtonActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        try {
+            int flightNum = Integer.valueOf(JOptionPane.showInputDialog(null, "Enter Flight Number", "Book a flight", JOptionPane.PLAIN_MESSAGE));
+            if (!existBooking(flightNum)){
+                JOptionPane.showMessageDialog(null, "Flight does not exist", "", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (exist(flightNum)){
+               JOptionPane.showMessageDialog(null, "You already booked for this flight", "", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+     
+            add(flightNum);
+            JOptionPane.showMessageDialog(null, "Successfully booked flight");
+            dispose();
+            new User(username, userId).setVisible(true);
+        } catch (Exception e){
+            System.out.println(e.getMessage());
         }
+    }              
+    
+    private boolean existBooking(int flightNum){
+        String sql = "Select flightNum from flights";
         try (Connection con = connect();
              Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            
-            while (rs.next()) {
-                message += String.valueOf(rs.getInt("flightNum")) + ", ";
-            }
-
-        } catch(SQLException e){
-            System.out.println(e.getMessage() + "    2");
+             ResultSet rs = stmt.executeQuery(sql)){
+             while(rs.next()){
+                 if (rs.getInt("flightNum") == flightNum){
+                     return true;
+                 }
+             } return false;
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
         }
-        int x = JOptionPane.showConfirmDialog(null, "are you sure you want to " + message, "", JOptionPane.YES_NO_OPTION);
-        if (x == JOptionPane.NO_OPTION){
-            
-        } else {
-            String sql2 = "";
-            if (search.equals("") || type.equals("All")){
-                sql2 += "Delete From flights";
-            } else{
-                sql2 += "Delete From Flights Where " + type + " == \"" + search + "\"";
-            }
-            try (Connection con = connect();
-                 Statement stmt = con.createStatement() ){
-                 stmt.executeUpdate(sql2);
-            } catch (SQLException e){
-                System.out.println(e.getMessage() + " 3");
-            }
-            JOptionPane.showMessageDialog(this, "Successfully deleted flights");
-            this.dispose();
-            new Admin().setVisible(true);
+        return false;
+    }
+    
+    private boolean exist(int flightNum){
+        String sql = "Select * from bookedflights  \n" +
+                "where userid == \"" + userId + "\"";
+        try (Connection con = connect();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)){
+            while (rs.next()){
+                if (rs.getInt("flightNum") == flightNum){
+                    return true;
+                }
+            } 
+            return false;
+        }catch (SQLException e){
+            System.out.println(e.getMessage());
         }
-    }                                            
+        return false;
+    }
+    
+    private void add(int flightNum){
+        String sql = "Insert into bookedFlights values ( " + userId + " ," + flightNum + ")";
+        try (Connection con = connect();
+             Statement stmt = con.createStatement()){
+            stmt.executeUpdate(sql);
+            
+        } catch (SQLException e){
+            System.out.println(e.getMessage());
+        }
+            
+    }
 
-//    public static void main(String args[]) {
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new DeleteFlight().setVisible(true);
-//            }
-//        });
-//    }
 }

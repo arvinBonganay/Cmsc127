@@ -113,7 +113,8 @@ public class Login extends JFrame {
         // log in
         String userName1 = usernameTextField.getText();
         String password1 = new String(passwordField.getPassword());
-        String sql = "Select username, password From accounts Where username == ? AND password == ?";
+
+        String sql = "Select userid, username, password From accounts Where username == ? AND password == ?";
         try (Connection con = connect();
             PreparedStatement pstmt = con.prepareStatement(sql)) {
 
@@ -125,7 +126,7 @@ public class Login extends JFrame {
             while (rs.next()){
                 String userName2 = rs.getString("username");
                 String password2 = rs.getString("password");
-                System.out.println(userName2 + "   " + password2);
+                int userId = rs.getInt("userid");
                 if (userName2.equals(userName1) && password1.equals(password2)){
                     // log in succesful
                     JOptionPane.showMessageDialog(null, "Log In successful");
@@ -134,7 +135,7 @@ public class Login extends JFrame {
                         new Admin().setVisible(true);
                     } else {
                         this.dispose();
-                        new User(userName2).setVisible(true);
+                        new User(userName2, userId).setVisible(true);
                     }
                     return;
                 }

@@ -1,4 +1,4 @@
-package db.admin;
+package db.user;
 
 import db.user.User;
 import java.sql.*;
@@ -9,25 +9,27 @@ import java.awt.*;
 import java.awt.event.*;
 
 
-public class ViewFlight extends JFrame {
+public class ViewMyFlight extends JFrame {
     private JScrollPane jScrollPane1;
     private JTable jTable1;
     private JButton searchButton;
     private JTextField searchField;
     private JComboBox<String> searchType;
-    private String parent;
+    private int userId;
     private String userName;
-
-    public ViewFlight(String parent) {
+   
+    
+    public ViewMyFlight(String userName, int userId) {
         initComponents();
-        String sql = "Select * From flights";
+        String sql = "Select distinct flightNum, airlineId, airportId, destinationFrom, destinationTo, date, pilot, airplane "
+                + "from (Select * from flights join bookedFlights) \n" +
+                "where userid == \"" + userId + "\"";
         showTable(sql);
-        this.parent = parent;
+        this.userName = userName;
+        this.userId = userId;
     }
     
-    public void setUserName(String s){
-        userName = s;
-    }
+   
     private void showTable(String sql){
         
         try (Connection con = connect();
@@ -48,7 +50,7 @@ public class ViewFlight extends JFrame {
                 JOptionPane.showMessageDialog(this, "No results Found");
             } else {
                 int row = l.size() / 8;
-
+                System.out.println(row);
                 String[][] data = new String[row][8];
                 for (int i = 0; i < row; i++){
 
@@ -94,7 +96,7 @@ public class ViewFlight extends JFrame {
         this.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-                new Admin().setVisible(true);
+                new User(userName, userId).setVisible(true);
                 
             }
         });
@@ -168,9 +170,14 @@ public class ViewFlight extends JFrame {
         String search = searchField.getText();
         String type = searchType.getSelectedItem().toString();
         if (type.equals("All")){
-            showTable("Select * From flights");
+            String sql = "Select distinct flightNum, airlineId, airportId, destinationFrom, destinationTo, date, pilot, airplane "
+                + "from (Select * from flights join bookedFlights) \n" +
+                "where userid == \"" + userId + "\"";
+            showTable(sql);
         } else {
-            String sql = "Select * From flights Where " + type + " == \"" + search + "\"";
+            String sql = "Select distinct flightNum, airlineId, airportId, destinationFrom, destinationTo, date, pilot, airplane "
+                + "from (Select * from flights join bookedFlights) \n" +
+                "where userid == \"" + userId + "\" and " + type + " == \"" + search + "\"";
             showTable(sql);
         }
         searchField.setText("");
@@ -196,5 +203,11 @@ public class ViewFlight extends JFrame {
 //            java.util.logging.Logger.getLogger(ViewFlight1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
         
+//        EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new ViewMyFlight("", 10).setVisible(true);
+//            }
+//        });
+//    }
 }
    

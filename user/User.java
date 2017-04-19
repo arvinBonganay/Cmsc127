@@ -14,11 +14,14 @@ public class User extends JFrame {
     private JButton bookFlightButton;
     private JLabel nameOfUser;
     private JLabel user;
+    private String userName;
+    private int userId;
     
     
-    public User(String userName) {
+    public User(String userName, int userId) {
         initComponents(userName);
-        
+        this.userName = userName;
+        this.userId = userId;
     }
 
     private void initComponents(String userName) {
@@ -35,7 +38,7 @@ public class User extends JFrame {
         nameOfUser.setFont(new java.awt.Font("Times New Roman", 1, 22)); // NOI18N
         nameOfUser.setText(userName);
 
-        viewFlightButton.setText("View Flights");
+        viewFlightButton.setText("View My Flights");
         viewFlightButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 viewFlightButtonActionPerformed(evt);
@@ -111,27 +114,27 @@ public class User extends JFrame {
                                        
     private void viewFlightButtonActionPerformed(ActionEvent evt) {
         this.setVisible(false);
-        ViewFlight v = new ViewFlight("admin");
+        ViewMyFlight v = new ViewMyFlight(userName, userId);
         v.setVisible(true);
+
     }
     
     private void cancelFlightButtonActionPerformed(ActionEvent evt) {                                         
         this.setVisible(false);
-//        DeleteFlight df = new DeleteFlight();
-//        df.setVisible(true);
+        new CancelFlight(userId, userName).setVisible(true);
+
     }                                        
     private void bookFlightButtonActionPerformed(ActionEvent evt) { 
         this.setVisible(false);
-        AddFlight af = new AddFlight();
-        af.setVisible(true);
+        new BookFlight(userId, userName).setVisible(true);
         
     }                                        
 
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new User("username").setVisible(true);
-            }
-        });
-    }    
+//    public static void main(String args[]) {
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new User("username", 10).setVisible(true);
+//            }
+//        });
+//    }    
 }
